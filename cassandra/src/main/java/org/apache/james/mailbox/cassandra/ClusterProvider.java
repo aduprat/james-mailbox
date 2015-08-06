@@ -16,32 +16,38 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
 package org.apache.james.mailbox.cassandra;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
+import javax.inject.Singleton;
 
-import org.apache.james.mailbox.MailboxSession;
-import org.apache.james.mailbox.store.StoreSubscriptionManager;
-import org.apache.james.mailbox.store.user.model.Subscription;
-import org.apache.james.mailbox.store.user.model.impl.SimpleSubscription;
+import com.datastax.driver.core.Cluster;
 
-/**
- * Cassandra implementation of {@link StoreSubscriptionManager}
- * 
- */
-public class CassandraSubscriptionManager extends StoreSubscriptionManager {
+@Singleton
+public class ClusterProvider implements Provider<Cluster> {
+
+    private final String ip;
+    private final int port;
+    private final String keyspace;
+    private final int replicationFactor;
 
     @Inject
-    public CassandraSubscriptionManager(CassandraMailboxSessionMapperFactory mapperFactory) {
-        super(mapperFactory);
+    private ClusterProvider(@Named("cassandra.ip") String ip, @Named("cassandra.port") int port,
+            @Named("cassandra.keyspace") String keyspace, @Named("cassandra.replication.factor") int replicationFactor) {
+
+        this.ip = ip;
+        this.port = port;
+        this.keyspace = keyspace;
+        this.replicationFactor = replicationFactor;
+        
     }
 
-    /**
-     * @see org.apache.james.mailbox.store.StoreSubscriptionManager#createSubscription(org.apache.james.mailbox.MailboxSession,
-     *      java.lang.String)
-     */
-    protected Subscription createSubscription(MailboxSession session, String mailbox) {
-        return new SimpleSubscription(session.getUser().getUserName(), mailbox);
+    @Override
+    public Cluster get() {
+        return ClusterWithKeyspaceCreatedFactory.clusterWithInitializedKeyspace(
+                ClusterFactory.createClusterForSingleServerWithoutPassWord(ip, port),
+                keyspace, replicationFactor);
     }
 }

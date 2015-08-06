@@ -19,25 +19,26 @@
 package org.apache.james.mailbox.cassandra;
 
 
-import com.datastax.driver.core.exceptions.NoHostAvailableException;
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Session;
-import com.google.common.base.Throwables;
+import java.util.Optional;
+
 import org.apache.james.mailbox.cassandra.mail.utils.FunctionRunnerWithRetry;
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Session;
+import com.datastax.driver.core.exceptions.NoHostAvailableException;
+import com.google.common.base.Throwables;
 
 /**
  * Class that will creates a single instance of Cassandra session.
  */
 public final class CassandraClusterSingleton {
-    private static final String CLUSTER_IP = "localhost";
-    private static final int CLUSTER_PORT_TEST = 9142;
-    private static final String KEYSPACE_NAME = "apache_james";
-    private static final int REPLICATION_FACTOR = 1;
+    public static final String CLUSTER_IP = "localhost";
+    public static final int CLUSTER_PORT_TEST = 9142;
+    public static final String KEYSPACE_NAME = "apache_james";
+    public static final int REPLICATION_FACTOR = 1;
 
     private static final long SLEEP_BEFORE_RETRY = 200;
     private static final int MAX_RETRY = 200;

@@ -19,11 +19,13 @@
 
 package org.apache.james.mailbox.cassandra;
 
+import java.util.List;
+
+import javax.inject.Inject;
+
 import com.datastax.driver.core.Cluster;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-
-import java.util.List;
 
 public class ClusterFactory {
 
@@ -31,6 +33,7 @@ public class ClusterFactory {
         private String ip;
         private int port;
 
+        @Inject
         public CassandraServer(String ip, int port) {
             this.ip = ip;
             this.port = port;

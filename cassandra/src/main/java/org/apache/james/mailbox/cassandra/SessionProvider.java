@@ -16,32 +16,30 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
 package org.apache.james.mailbox.cassandra;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
+import javax.inject.Singleton;
 
-import org.apache.james.mailbox.MailboxSession;
-import org.apache.james.mailbox.store.StoreSubscriptionManager;
-import org.apache.james.mailbox.store.user.model.Subscription;
-import org.apache.james.mailbox.store.user.model.impl.SimpleSubscription;
+import com.datastax.driver.core.Session;
 
-/**
- * Cassandra implementation of {@link StoreSubscriptionManager}
- * 
- */
-public class CassandraSubscriptionManager extends StoreSubscriptionManager {
+@Singleton
+public class SessionProvider implements Provider<Session> {
+
+    private final ClusterProvider clusterProvider;
+    private final String keyspace;
 
     @Inject
-    public CassandraSubscriptionManager(CassandraMailboxSessionMapperFactory mapperFactory) {
-        super(mapperFactory);
+    private SessionProvider(ClusterProvider clusterProvider, @Named("cassandra.keyspace") String keyspace) {
+        this.clusterProvider = clusterProvider;
+        this.keyspace = keyspace;
+        
     }
 
-    /**
-     * @see org.apache.james.mailbox.store.StoreSubscriptionManager#createSubscription(org.apache.james.mailbox.MailboxSession,
-     *      java.lang.String)
-     */
-    protected Subscription createSubscription(MailboxSession session, String mailbox) {
-        return new SimpleSubscription(session.getUser().getUserName(), mailbox);
+    @Override
+    public Session get() {
+        return SessionFactory.createSession(clusterProvider.get(), keyspace);
     }
 }

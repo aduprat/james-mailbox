@@ -19,19 +19,22 @@
 
 package org.apache.james.mailbox.cassandra;
 
-import com.datastax.driver.core.Session;
-import com.datastax.driver.core.UserType;
-import com.datastax.driver.core.schemabuilder.CreateType;
-import com.datastax.driver.core.schemabuilder.SchemaBuilder;
-import com.google.common.collect.ImmutableMap;
-import org.apache.james.mailbox.cassandra.table.CassandraMailboxTable;
-import org.apache.james.mailbox.cassandra.table.CassandraMessageTable;
+import static com.datastax.driver.core.DataType.text;
 
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.datastax.driver.core.DataType.text;
+import javax.inject.Inject;
+
+import org.apache.james.mailbox.cassandra.table.CassandraMailboxTable;
+import org.apache.james.mailbox.cassandra.table.CassandraMessageTable;
+
+import com.datastax.driver.core.Session;
+import com.datastax.driver.core.UserType;
+import com.datastax.driver.core.schemabuilder.CreateType;
+import com.datastax.driver.core.schemabuilder.SchemaBuilder;
+import com.google.common.collect.ImmutableMap;
 
 public class CassandraTypesProvider {
 
@@ -65,6 +68,7 @@ public class CassandraTypesProvider {
     private final ImmutableMap<TYPE, UserType> userTypes;
     private final Session session;
 
+    @Inject
     public CassandraTypesProvider(Session session) {
         this.session = session;
         initializeTypes();
